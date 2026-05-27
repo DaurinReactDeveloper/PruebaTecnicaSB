@@ -10,10 +10,4 @@
     <ProjectReference Include="..\GestorEmpleados.Domain\GestorEmpleados.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>
