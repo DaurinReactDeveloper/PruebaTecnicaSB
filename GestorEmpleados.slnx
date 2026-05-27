@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="GestorEmpleados.Api/GestorEmpleados.Api.csproj" />
+  <Project Path="GestorEmpleados.Application/GestorEmpleados.Application.csproj" />
+  <Project Path="GestorEmpleados.Domain/GestorEmpleados.Domain.csproj" />
+  <Project Path="GestorEmpleados.Infrastructure/GestorEmpleados.Infrastructure.csproj" />
+  <Project Path="GestorEmpleados.Loc/GestorEmpleados.Loc.csproj" />
+  <Project Path="GestorEmpleados.Persistence/GestorEmpleados.Persistence.csproj" />
+</Solution>
