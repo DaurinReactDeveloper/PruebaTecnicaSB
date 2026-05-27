@@ -1,6 +1,9 @@
 
 using GestorEmpleados.Persistence.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace GestorEmpleados.Api
 {
@@ -20,6 +23,24 @@ namespace GestorEmpleados.Api
             builder.Services.AddDbContext<EmployeeManagementDBContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeManagementDBContext")));
 
+
+            //Integretion JWT
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,6 +48,15 @@ namespace GestorEmpleados.Api
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
+            else
+            {
+
+                app.UseSwagger();
+                app.UseSwaggerUI(c => {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
 
             app.UseHttpsRedirection();

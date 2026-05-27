@@ -1,5 +1,6 @@
 ﻿using GestorEmpleados.Domain.Entities;
 using GestorEmpleados.Infrastructure.Exceptions;
+using GestorEmpleados.Infrastructure.Models;
 using GestorEmpleados.Persistence.Context;
 using GestorEmpleados.Persistence.Core;
 using GestorEmpleados.Persistence.Interfaces;
@@ -26,7 +27,7 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
-        public async Task<List<Department>> GetDepartments()
+        public async Task<List<DepartmentModel>> GetDepartments()
         {
 
             try
@@ -34,7 +35,7 @@ namespace GestorEmpleados.Persistence.Repositories
 
                 var departments = await (from d in _dbContext.Departments
                                          where d.Deleted == false
-                                         select new Department
+                                         select new DepartmentModel
                                          {
                                              DepartmentId = d.DepartmentId,
                                              DepartmentName = d.DepartmentName,
@@ -48,7 +49,7 @@ namespace GestorEmpleados.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Ha ocurrido un error obteniendo los departamentos, {ex.ToString()}.");
-                throw new EmployeeExceptions("Ha ocurrido un error obteniendo los departamentos.");
+                throw new DepartmentExceptions("Ha ocurrido un error obteniendo los departamentos.");
             }
 
         }

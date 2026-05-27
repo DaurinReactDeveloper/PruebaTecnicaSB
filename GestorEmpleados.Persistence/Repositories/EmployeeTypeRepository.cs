@@ -1,5 +1,6 @@
 ﻿using GestorEmpleados.Domain.Entities;
 using GestorEmpleados.Infrastructure.Exceptions;
+using GestorEmpleados.Infrastructure.Models;
 using GestorEmpleados.Persistence.Context;
 using GestorEmpleados.Persistence.Core;
 using GestorEmpleados.Persistence.Interfaces;
@@ -26,18 +27,18 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
-        public async Task<List<EmployeeType>> GetEmployeeTypes()
+        public async Task<List<EmployeeTypeModel>> GetEmployeeTypes()
         {
             try
             {
                 var employeeTypes = await (from et in _dbContext.EmployeeTypes
-                                           where  et.Deleted == false
-                                           select new EmployeeType
-                                       {
-                                           EmployeeTypeId = et.EmployeeTypeId,
-                                           TypeName = et.TypeName,
-                                           Description = et.Description
-                                       }).AsNoTracking().ToListAsync();
+                                           where et.Deleted == false
+                                           select new EmployeeTypeModel
+                                           {
+                                               EmployeeTypeId = et.EmployeeTypeId,
+                                               TypeName = et.TypeName,
+                                               Description = et.Description
+                                           }).AsNoTracking().ToListAsync();
 
                 return employeeTypes;
 
@@ -45,7 +46,7 @@ namespace GestorEmpleados.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Ha ocurrido un error obteniendo los tipos de empleados, {ex.ToString()}.");
-                throw new EmployeeExceptions("Ha ocurrido un error obteniendo los tipos de empleados.");
+                throw new EmployeeTypeExceptions("Ha ocurrido un error obteniendo los tipos de empleados.");
             }
         }
     }

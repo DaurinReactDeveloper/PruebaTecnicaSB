@@ -11,6 +11,8 @@ namespace GestorEmpleados.Persistence.Interfaces
 {
     public interface IRole : IBaseRepository<Role>
     {
+        Task<List<RoleModel>> GetRoleAll();
         Task<RoleModel> GetRoleById(int Id);
+
     }
 }

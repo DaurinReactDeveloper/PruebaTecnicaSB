@@ -1,5 +1,6 @@
 ﻿using GestorEmpleados.Domain.Entities;
 using GestorEmpleados.Infrastructure.Exceptions;
+using GestorEmpleados.Infrastructure.Models;
 using GestorEmpleados.Persistence.Context;
 using GestorEmpleados.Persistence.Core;
 using GestorEmpleados.Persistence.Interfaces;
@@ -26,13 +27,13 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
-        public async Task<List<EmployeeStatus>> GetEmployeeStatuses()
+        public async Task<List<EmployeeStatusModel>> GetEmployeeStatuses()
         {
             try
             {
                 var employeeStatuses = await (from e in _dbContext.EmployeeStatuses
                                               where e.Deleted == false
-                                              select new EmployeeStatus
+                                              select new EmployeeStatusModel
                                               {
 
                                                   EmployeeStatusId = e.EmployeeStatusId,
@@ -47,7 +48,7 @@ namespace GestorEmpleados.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Ha ocurrido un error obteniendo los estados de los empleados, {ex.ToString()}.");
-                throw new EmployeeExceptions("Ha ocurrido un error obteniendo estados de los empleados.");
+                throw new EmployeeStatusExceptions("Ha ocurrido un error obteniendo estados de los empleados.");
             }
         }
 

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,30 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
+        public async Task<List<RoleModel>> GetRoleAll()
+        {
+            try
+            {
+
+                var roles = await (from r in _dbContext.Roles
+                                   where r.Deleted == false
+                                   select new RoleModel
+                                   {
+                                       RoleId = r.RoleId,
+                                       RoleName = r.RoleName,
+                                       Description = r.Description
+                                   }).ToListAsync();
+
+                return roles;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error obteniendo los roles, {ex.ToString()}.");
+                throw new RoleExceptions("Ha ocurrido un error obteniendo los roles.");
+            }
+        }
+
         public async Task<RoleModel> GetRoleById(int Id)
         {
             try
@@ -46,7 +71,7 @@ namespace GestorEmpleados.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Ha ocurrido un error obteniendo el rol, {ex.ToString()}.");
-                throw new EmployeeExceptions("Ha ocurrido un error obteniendo el rol.");
+                throw new RoleExceptions("Ha ocurrido un error obteniendo el rol.");
             }
         }
 

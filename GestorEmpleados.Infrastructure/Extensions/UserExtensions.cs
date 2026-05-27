@@ -23,5 +23,17 @@ namespace GestorEmpleados.Infrastructure.Extensions
             };
         }
 
+        public static User UserModelToEntity(this UserModel userEntity)
+        {
+            return new User
+            {
+                UserId = userEntity.UserId,
+                Email = userEntity.Email,
+                Username = userEntity.Username,
+                PasswordHash = userEntity.PasswordHash,
+                RoleId = userEntity.RoleId
+            };
+        }
+
     }
 }

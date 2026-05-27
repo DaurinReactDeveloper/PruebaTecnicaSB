@@ -171,6 +171,14 @@ namespace GestorEmpleados.Persistence.Repositories
 
                 empleadoUpdate.FirstName = entity.FirstName;
                 empleadoUpdate.LastName = entity.LastName;
+                empleadoUpdate.SocialSecurityNumber = entity.SocialSecurityNumber;
+                empleadoUpdate.EmployeeStatusId = entity.EmployeeStatusId;
+                empleadoUpdate.GrossSales = entity.GrossSales;
+                empleadoUpdate.HourlyRate = entity.HourlyRate;
+                empleadoUpdate.HoursWorked = entity.HoursWorked;
+                empleadoUpdate.WeeklySalary = entity.WeeklySalary;
+                empleadoUpdate.CommissionRate = entity.CommissionRate;
+
 
                 await base.Update(empleadoUpdate);
                 await base.SaveChanges();

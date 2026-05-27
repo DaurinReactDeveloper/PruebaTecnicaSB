@@ -50,7 +50,7 @@ namespace GestorEmpleados.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Ha ocurrido un error obteniendo el usuario, {ex.ToString()}.");
-                throw new EmployeeExceptions("Ha ocurrido un error obteniendo el usuario.");
+                throw new UserExceptions("Ha ocurrido un error obteniendo el usuario.");
             }
 
         }
@@ -76,9 +76,95 @@ namespace GestorEmpleados.Persistence.Repositories
             catch (Exception ex)
             {
                 _logger.LogError($"Ha ocurrido un error obteniendo los usuarios, {ex.ToString()}.");
-                throw new EmployeeExceptions("Ha ocurrido un error obteniendo los usuarios.");
+                throw new UserExceptions("Ha ocurrido un error obteniendo los usuarios.");
             }
         }
 
+        public async Task<UserModel> GetUserById(int id)
+        {
+            try
+            {
+                var user = await (from u in _dbContext.Users
+                                  where u.UserId == id && u.Deleted == false
+                                  select new UserModel
+                                  {
+                                      UserId = u.UserId,
+                                      EmployeeId = u.EmployeeId,
+                                      Email = u.Email,
+                                      Username = u.Username,
+                                      RoleId = u.RoleId
+
+                                  }).FirstOrDefaultAsync();
+                return user;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error obteniendo el usuario, {ex.ToString()}.");
+                throw new UserExceptions("Ha ocurrido un error obteniendo el usuario.");
+            }
+        }
+
+        public override async Task Add(User entity)
+        {
+            try
+            {
+                await base.Add(entity);
+                await base.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error guardando el usuario, {ex.ToString()}.");
+                throw new UserExceptions("Ha ocurrido un error guardando el usuario.");
+            }
+        }
+
+        public override async Task Update(User entity)
+        {
+            try
+            {
+                var userUpdate = await base.GetById(entity.EmployeeId);
+
+                if (userUpdate is null || userUpdate.Deleted)
+                {
+                    throw new EmployeeExceptions("Ha ocurrido un error obteniendo el usuario.");
+                }
+
+                userUpdate.Role = entity.Role;
+                userUpdate.Email = entity.Email;
+                userUpdate.Username = entity.Username;
+                userUpdate.PasswordHash = entity.PasswordHash;
+
+                await base.Update(userUpdate);
+                await base.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error actualizando el empleado, {ex.ToString()}.");
+                throw new EmployeeExceptions("Ha ocurrido un error actualizando el empleado.");
+            }
+        }
+
+        public override async Task Remove(User entity)
+        {
+            try
+            {
+                var user = await base.GetById(entity.EmployeeId);
+                if (user is null || user.Deleted)
+                {
+                    throw new UserExceptions("Ha ocurrido un error obteniendo el usuario.");
+                }
+                user.Deleted = true;
+                await base.Update(user);
+                await base.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error eliminando el usuario, {ex.ToString()}.");
+                throw new UserExceptions("Ha ocurrido un error eliminando el usuario.");
+            }
+
+        }
+    
     }
 }

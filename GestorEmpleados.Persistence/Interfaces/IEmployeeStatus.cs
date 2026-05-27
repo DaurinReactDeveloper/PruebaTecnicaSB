@@ -1,5 +1,6 @@
 ﻿using GestorEmpleados.Domain.Entities;
 using GestorEmpleados.Domain.Repository;
+using GestorEmpleados.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace GestorEmpleados.Persistence.Interfaces
 {
     public interface IEmployeeStatus : IBaseRepository<EmployeeStatus>
     {
-        Task<List<EmployeeStatus>> GetEmployeeStatuses();
+        Task<List<EmployeeStatusModel>> GetEmployeeStatuses();
     }
 }

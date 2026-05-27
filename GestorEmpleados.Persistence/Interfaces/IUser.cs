@@ -13,5 +13,8 @@ namespace GestorEmpleados.Persistence.Interfaces
     {
         Task<UserModel> GetUserByGmail(string email);
         Task<List<UserModel>> GetUsers();
+        Task<UserModel> GetUserById(int Id);
+
+
     }
 }

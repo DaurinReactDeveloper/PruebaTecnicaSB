@@ -11,7 +11,7 @@ namespace GestorEmpleados.Infrastructure.Extensions
     public static class EmployeeExtensions
     {
 
-        public static EmployeeModel EmployeeEntityToModel (this Employee employeeEntity)
+        public static EmployeeModel EmployeeEntityToModel(this Employee employeeEntity)
         {
             return new EmployeeModel
             {
@@ -31,6 +31,25 @@ namespace GestorEmpleados.Infrastructure.Extensions
             };
         }
 
+
+        public static Employee EmployeeModelToEntity(this EmployeeModel employeeEntity)
+        {
+            return new Employee
+            {
+                EmployeeId = employeeEntity.EmployeeId,
+                FirstName = employeeEntity.FirstName,
+                LastName = employeeEntity.LastName,
+                SocialSecurityNumber = employeeEntity.SocialSecurityNumber,
+                DepartmentId = employeeEntity.DepartmentId,
+                EmployeeStatusId = employeeEntity.EmployeeStatusId,
+                WeeklySalary = employeeEntity.WeeklySalary,
+                HourlyRate = employeeEntity.HourlyRate,
+                HoursWorked = employeeEntity.HoursWorked,
+                GrossSales = employeeEntity.GrossSales,
+                CommissionRate = employeeEntity.CommissionRate,
+                BaseSalary = employeeEntity.BaseSalary
+            };
+        }
 
     }
 }
