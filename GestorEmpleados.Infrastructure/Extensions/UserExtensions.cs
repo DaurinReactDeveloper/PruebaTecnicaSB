@@ -16,6 +16,7 @@ namespace GestorEmpleados.Infrastructure.Extensions
             return new UserModel
             {
                 UserId = userEntity.UserId,
+                Email = userEntity.Email,
                 Username = userEntity.Username,
                 PasswordHash = userEntity.PasswordHash,
                 RoleId = userEntity.RoleId

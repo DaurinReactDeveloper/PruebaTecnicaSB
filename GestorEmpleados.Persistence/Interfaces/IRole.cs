@@ -1,0 +1,16 @@
+﻿using GestorEmpleados.Domain.Entities;
+using GestorEmpleados.Domain.Repository;
+using GestorEmpleados.Infrastructure.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GestorEmpleados.Persistence.Interfaces
+{
+    public interface IRole : IBaseRepository<Role>
+    {
+        Task<RoleModel> GetRoleById(int Id);
+    }
+}

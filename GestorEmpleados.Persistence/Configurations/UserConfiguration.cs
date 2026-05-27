@@ -16,6 +16,8 @@ namespace GestorEmpleados.Persistence.Configurations
 
             entity.HasIndex(e => e.EmployeeId, "UQ__Users__7AD04FF0CCA3A3AF").IsUnique();
 
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534310E4291").IsUnique();
+
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.CreatedBy)
                 .IsRequired()
@@ -28,6 +30,10 @@ namespace GestorEmpleados.Persistence.Configurations
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.DeletedDate).HasColumnType("datetime");
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(120)
+                .IsUnicode(false);
             entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
             entity.Property(e => e.ModifiedBy)
                 .HasMaxLength(100)
@@ -42,16 +48,6 @@ namespace GestorEmpleados.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.Employee).WithOne(p => p.User)
-                .HasForeignKey<User>(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Users_Employees");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Users_Roles");
 
             OnConfigurePartial(entity);
         }
