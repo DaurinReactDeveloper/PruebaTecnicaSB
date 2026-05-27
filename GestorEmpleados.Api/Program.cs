@@ -1,4 +1,7 @@
 
+using GestorEmpleados.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace GestorEmpleados.Api
 {
     public class Program
@@ -13,6 +16,9 @@ namespace GestorEmpleados.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<EmployeeManagementDBContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeManagementDBContext")));
 
             var app = builder.Build();
 
