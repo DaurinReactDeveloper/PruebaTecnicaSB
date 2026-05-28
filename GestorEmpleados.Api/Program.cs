@@ -35,6 +35,27 @@ namespace GestorEmpleados.Api
             builder.Services.AddReportDependencies();
             builder.Services.AddJWTDependencies();
 
+            //Configurar CORS
+            var frontendUrl = builder.Configuration.GetValue<string>("FrontendUrl");
+
+            if (string.IsNullOrEmpty(frontendUrl))
+            {
+
+                throw new ArgumentException("FrontendUrl" + "El valor de FrontendUrl no puede ser nulo o vacío.");
+
+            }
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins(frontendUrl)
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                });
+            });
+
             //Integretion JWT
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
