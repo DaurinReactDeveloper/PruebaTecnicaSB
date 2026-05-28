@@ -3,6 +3,7 @@ using GestorEmpleados.Application.Core;
 using GestorEmpleados.Application.Dtos.PayrollResultDto;
 using GestorEmpleados.Application.Validations;
 using GestorEmpleados.Domain.Entities;
+using GestorEmpleados.Infrastructure.Models;
 using GestorEmpleados.Persistence.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,20 +25,20 @@ namespace GestorEmpleados.Application.Services
             this._logger = logger;
         }
 
-        // Reporte semanal de nómina para todos los empleados registrados
-        public async Task<ServiceResult> GenerateWeeklyPayrollReport()
+        // Reporte semanal de nómina para todos los empleados pasándole el rango de fechas
+        public async Task<ServiceResult> GenerateWeeklyPayrollReport(PayrollReportRequestDto request)
         {
             ServiceResult result = new ServiceResult();
             var reportData = new List<PayrollResultDto>();
 
             try
             {
-                var employees = await this._employeeRepository.GetPayroll(null);
+                var employees = await this._employeeRepository.GetPayroll(null, request.StartDate, request.EndDate);
 
                 if (employees == null || !employees.Any())
                 {
                     result.ResultType = MessageType.NotFound;
-                    result.Message = "No hay empleados registrados para generar el reporte.";
+                    result.Message = "No hay datos de empleados para el rango de fechas especificado.";
                     return result;
                 }
 
@@ -53,7 +54,7 @@ namespace GestorEmpleados.Application.Services
                 }
 
                 result.Data = reportData;
-                result.Message = $"Reporte semanal generado exitosamente. Total de empleados procesados: {reportData.Count}.";
+                result.Message = $"Reporte semanal generado exitosamente ({request.StartDate:yyyy-MM-dd} al {request.EndDate:yyyy-MM-dd}). Total: {reportData.Count}.";
             }
             catch (Exception ex)
             {
@@ -65,20 +66,20 @@ namespace GestorEmpleados.Application.Services
             return result;
         }
 
-        // Cálculo del pago semanal para un empleado específico
-        public async Task<ServiceResult> CalculateWeeklyPayroll(int employeeId)
+        // Cálculo del pago semanal para un empleado específico en un rango de fechas
+        public async Task<ServiceResult> CalculateWeeklyPayroll(int employeeId, PayrollReportRequestDto request)
         {
             ServiceResult result = new ServiceResult();
 
             try
             {
-                var employees = await this._employeeRepository.GetPayroll(employeeId);
+                var employees = await this._employeeRepository.GetPayroll(employeeId, request.StartDate, request.EndDate);
                 var employee = employees?.FirstOrDefault();
 
                 if (employee == null)
                 {
                     result.ResultType = MessageType.NotFound;
-                    result.Message = "No se encontró el empleado activo para calcular el pago.";
+                    result.Message = "No se encontraron registros del empleado para el periodo solicitado.";
                     return result;
                 }
 
@@ -98,7 +99,7 @@ namespace GestorEmpleados.Application.Services
                 };
 
                 result.Data = payrollDto;
-                result.Message = "Pago semanal calculado correctamente.";
+                result.Message = $"Pago calculado correctamente para el periodo {request.StartDate:yyyy-MM-dd} al {request.EndDate:yyyy-MM-dd}.";
             }
             catch (Exception ex)
             {

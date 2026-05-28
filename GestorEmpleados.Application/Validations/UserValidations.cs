@@ -37,7 +37,7 @@ namespace GestorEmpleados.Application.Validations
             return string.IsNullOrWhiteSpace(email);
         }
 
-        public static bool IsInvalidUserList(List<UserModel> users)
+        public static bool IsInvalidUserList(List<Vw_UserDetailModel> users)
         {
             return users == null || !users.Any();
         }

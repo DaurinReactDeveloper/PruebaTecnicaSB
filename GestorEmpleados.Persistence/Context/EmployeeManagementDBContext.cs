@@ -25,14 +25,21 @@ namespace GestorEmpleados.Persistence.Context
 
         public virtual DbSet<User> Users { get; set; }
 
+        public virtual DbSet<VwEmployeeDetail> VwEmployeeDetails { get; set; }
+
+        public virtual DbSet<VwUserDetail> VwUserDetails { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.ApplyConfiguration(new Configurations.DepartmentConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.EmployeeConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.EmployeeStatusConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.EmployeeTypeConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.RoleConfiguration());
             modelBuilder.ApplyConfiguration(new Configurations.UserConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.VwEmployeeDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new Configurations.VwUserDetailConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
         }

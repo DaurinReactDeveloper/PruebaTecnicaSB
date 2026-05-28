@@ -5,6 +5,7 @@ using GestorEmpleados.Application.Validations;
 using GestorEmpleados.Domain.Entities;
 using GestorEmpleados.Infrastructure.Extensions;
 using GestorEmpleados.Persistence.Interfaces;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,111 @@ namespace GestorEmpleados.Application.Services
             this._logger = logger;
         }
 
+        public async Task<ServiceResult> GetEmployeeByFilter(string name, int? departmentId, int? employeeStatusId)
+        {
+
+            ServiceResult result = new ServiceResult();
+
+            try
+            {
+
+                if (EmployeeValidations.IsParameterNull(name, departmentId, employeeStatusId))
+                {
+                    result.ResultType = MessageType.Warning;
+                    result.Message = "Debe proporcionar al menos un filtro para buscar empleados.";
+                    return result;
+                }
+
+                var employees = await this._employeeRepository.GetEmployeeByFilter(name, departmentId, employeeStatusId);
+
+                if (EmployeeValidations.IsInvalidEmployeeList(employees))
+                {
+
+                    result.ResultType = MessageType.NotFound;
+                    result.Message = "No se encontraron empleados con los filtros proporcionados.";
+                    return result;
+
+                }
+
+                result.Data = employees;
+                result.Message = "Empleados obtenidos correctamente.";
+
+            }
+            catch (Exception ex)
+            {
+                result.ResultType = MessageType.Error;
+                result.Message = "Error obteniendo los empleados.";
+                this._logger.LogError($"Ha ocurrido un error obteniendo los empleados: {ex.Message}.");
+            }
+
+            return result;
+        }
+
+        public async Task<ServiceResult> GetEmployeeById(int id)
+        {
+            ServiceResult result = new ServiceResult();
+
+            try
+            {
+
+                var employee = await this._employeeRepository.GetEmployeeById(id);
+
+                if (EmployeeValidations.IsNullEmployee(employee))
+                {
+                    result.ResultType = MessageType.NotFound;
+                    result.Message = "No se encontró el empleado con el ID proporcionado.";
+                    return result;
+                }
+
+                result.Data = employee;
+                result.Message = "Empleado obtenido correctamente.";
+
+            }
+            catch (Exception ex)
+            {
+                result.ResultType = MessageType.Error;
+                result.Message = "Error obtiendo el empleado.";
+                this._logger.LogError($"Ha ocurrido un error obteniendo el empleado: {ex.Message}.");
+            }
+
+            return result;
+
+        }
+
+        public async Task<ServiceResult> GetEmployees()
+        {
+
+            ServiceResult result = new ServiceResult();
+
+            try
+            {
+
+                var employees = await this._employeeRepository.GetEmployees();
+
+                if (EmployeeValidations.IsInvalidVwEmployeeList(employees))
+                {
+                    result.ResultType = MessageType.NotFound;
+                    result.Message = "No se encontraron empleados.";
+                    return result;
+                }
+
+                result.Data = employees;
+                result.Message = "Empleados obtenidos correctamente.";
+
+            }
+            catch (Exception ex)
+            {
+                result.ResultType = MessageType.Error;
+                result.Message = "Error obtiendo los empleados.";
+                this._logger.LogError($"Ha ocurrido un error obteniendo los empleados: {ex.Message}.");
+            }
+
+            return result;
+        }
+
+
+
+
         public async Task<ServiceResult> Add(EmployeeAddDto modelDto)
         {
             ServiceResult result = new ServiceResult();
@@ -36,7 +142,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (validationErrors.Any())
                 {
-                    result.ResultType = MessageType.Warning; 
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Error de validación en los datos del empleado.";
                     result.Errors = validationErrors;
                     return result;
@@ -77,108 +183,6 @@ namespace GestorEmpleados.Application.Services
             return result;
         }
 
-        public async Task<ServiceResult> GetEmployeeByFilter(string name, int? departmentId, int? employeeStatusId)
-        {
-
-            ServiceResult result = new ServiceResult();
-
-            try
-            {
-
-                if (EmployeeValidations.IsParameterNull(name, departmentId, employeeStatusId))
-                {
-                    result.ResultType = MessageType.Warning; 
-                    result.Message = "Debe proporcionar al menos un filtro para buscar empleados.";
-                    return result;
-                }
-
-                var employees = await this._employeeRepository.GetEmployeeByFilter(name, departmentId, employeeStatusId);
-
-                if (EmployeeValidations.IsInvalidEmployeeList(employees))
-                {
-
-                    result.ResultType = MessageType.NotFound; 
-                    result.Message = "No se encontraron empleados con los filtros proporcionados.";
-                    return result;
-
-                }
-
-                result.Data = employees;
-                result.Message = "Empleados obtenidos correctamente.";
-
-            }
-            catch (Exception ex)
-            {
-                result.ResultType = MessageType.Error;
-                result.Message = "Error obteniendo los empleados.";
-                this._logger.LogError($"Ha ocurrido un error obteniendo los empleados: {ex.Message}.");
-            }
-
-            return result;
-        }
-
-        public async Task<ServiceResult> GetEmployeeById(int id)
-        {
-            ServiceResult result = new ServiceResult();
-
-            try
-            {
-
-                var employee = await this._employeeRepository.GetEmployeeById(id);
-
-                if (EmployeeValidations.IsNullEmployee(employee))
-                {
-                    result.ResultType = MessageType.NotFound;                                     
-                    result.Message = "No se encontró el empleado con el ID proporcionado.";
-                    return result;
-                }
-
-                result.Data = employee;
-                result.Message = "Empleado obtenido correctamente.";
-
-            }
-            catch (Exception ex)
-            {
-                result.ResultType = MessageType.Error;
-                result.Message = "Error obtiendo el empleado.";
-                this._logger.LogError($"Ha ocurrido un error obteniendo el empleado: {ex.Message}.");
-            }
-
-            return result;
-
-        }
-
-        public async Task<ServiceResult> GetEmployees()
-        {
-
-            ServiceResult result = new ServiceResult();
-
-            try
-            {
-
-                var employees = await this._employeeRepository.GetEmployees();
-
-                if (EmployeeValidations.IsInvalidEmployeeList(employees))
-                {
-                    result.ResultType = MessageType.NotFound;
-                    result.Message = "No se encontraron empleados.";
-                    return result;
-                }
-
-                result.Data = employees;
-                result.Message = "Empleados obtenidos correctamente.";
-
-            }
-            catch (Exception ex)
-            {
-                result.ResultType = MessageType.Error;
-                result.Message = "Error obtiendo los empleados.";
-                this._logger.LogError($"Ha ocurrido un error obteniendo los empleados: {ex.Message}.");
-            }
-
-            return result;
-        }
-
         public async Task<ServiceResult> Remove(EmployeeRemoveDto modelDto)
         {
 
@@ -189,7 +193,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsInvalidEmployeeId(modelDto))
                 {
-                    result.ResultType = MessageType.Warning; 
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Debe proporcionar el ID del empleado.";
                     return result;
                 }
@@ -286,5 +290,39 @@ namespace GestorEmpleados.Application.Services
             return result;
         }
 
+        public async Task<ServiceResult> GetEmployeeBySSN(string SocialSecurityNumber)
+        {
+
+            ServiceResult result = new ServiceResult();
+
+            try
+            {
+
+                var employee = await this._employeeRepository.GetEmployeeBySSN(SocialSecurityNumber);
+
+                if (EmployeeValidations.IsNullEmployee(employee))
+                {
+                    result.ResultType = MessageType.NotFound;
+                    result.Message = "No se encontró el empleado con el número de seguro social proporcionado.";
+                    return result;
+                }
+
+                result.Data = employee;
+                result.Message = "Empleado obtenido correctamente.";
+
+            }
+            catch (Exception ex)
+            {
+
+                result.ResultType = MessageType.Error;
+                result.Message = "Error obtiendo el empleado por el SSN.";
+                this._logger.LogError($"Ha ocurrido un error obtiendo el empleado por el SSN: {ex.Message}.");
+
+            }
+
+            return result;
+
+        }
+    
     }
 }

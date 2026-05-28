@@ -52,6 +52,12 @@ namespace GestorEmpleados.Application.Validations
             return employees == null || !employees.Any();
         }
 
+        public static bool IsInvalidVwEmployeeList(List<Vw_EmployeModel> employees)
+        {
+            return employees == null || !employees.Any();
+        }
+
+
         public static bool IsNullEmployee(EmployeeModel employee)
         {
             return employee == null;

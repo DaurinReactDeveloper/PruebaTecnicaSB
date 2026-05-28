@@ -32,6 +32,16 @@ namespace GestorEmpleados.Api.Controllers
             return this.ToActionResult(result);
         }
 
+
+        // GET: api/<EmployeeController>
+        [HttpGet("ssn/{SocialSecurityNumber}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Get(string SocialSecurityNumber)
+        {
+            var result = await _employeeServices.GetEmployeeBySSN(SocialSecurityNumber);
+            return this.ToActionResult(result);
+        }
+
         // GET api/<EmployeeController>/5
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]

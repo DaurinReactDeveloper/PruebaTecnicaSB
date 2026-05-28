@@ -27,32 +27,37 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
-        public async Task<List<EmployeeModel>> GetEmployees()
+        public async Task<List<Vw_EmployeModel>> GetEmployees()
         {
 
             try
             {
-                var employees = await (from e in _dbContext.Employees
-                                       where e.Deleted == false
-                                       select new EmployeeModel
-                                       {
-                                           EmployeeId = e.EmployeeId,
-                                           FirstName = e.FirstName,
-                                           LastName = e.LastName,
-                                           SocialSecurityNumber = e.SocialSecurityNumber,
-                                           EmployeeTypeId = e.EmployeeTypeId,
-                                           DepartmentId = e.DepartmentId,
-                                           EmployeeStatusId = e.EmployeeStatusId,
-                                           WeeklySalary = e.WeeklySalary,
-                                           HourlyRate = e.HourlyRate,
-                                           HoursWorked = e.HoursWorked,
-                                           GrossSales = e.GrossSales,
-                                           CommissionRate = e.CommissionRate,
-                                           BaseSalary = e.BaseSalary
-
-                                       }).ToListAsync();
+                var employees = await _dbContext.VwEmployeeDetails
+               .Where(e => e.Deleted == false)
+               .Select(e => new Vw_EmployeModel
+               {
+                   EmployeeId = e.EmployeeId,
+                   FirstName = e.FirstName,
+                   LastName = e.LastName,
+                   FullName = e.FullName,
+                   SocialSecurityNumber = e.SocialSecurityNumber,
+                   EmployeeTypeId = e.EmployeeTypeId,
+                   EmployeeTypeName = e.EmployeeTypeName,
+                   DepartmentId = e.DepartmentId,
+                   DepartmentName = e.DepartmentName,
+                   EmployeeStatusId = e.EmployeeStatusId,
+                   StatusName = e.StatusName,
+                   WeeklySalary = e.WeeklySalary,
+                   HourlyRate = e.HourlyRate,
+                   HoursWorked = e.HoursWorked,
+                   GrossSales = e.GrossSales,
+                   CommissionRate = e.CommissionRate,
+                   BaseSalary = e.BaseSalary
+               })
+               .ToListAsync();
 
                 return employees;
+
             }
             catch (Exception ex)
             {
@@ -192,15 +197,17 @@ namespace GestorEmpleados.Persistence.Repositories
             }
         }
 
-        public async Task<List<PayrollEmployeeModel>> GetPayroll(int? id)
+        public async Task<List<PayrollEmployeeModel>> GetPayroll(int? employeeId, DateTime startDate, DateTime endDate)
         {
             try
             {
-                var paramId = new SqlParameter("@EmployeeID", (object)id ?? DBNull.Value);
+                var paramId = new SqlParameter("@EmployeeID", (object)employeeId ?? DBNull.Value);
+                var paramStartDate = new SqlParameter("@StartDate", startDate);
+                var paramEndDate = new SqlParameter("@EndDate", endDate);
 
                 var payrollEmployees = await _dbContext.Database
                     .SqlQuery<PayrollEmployeeModel>(
-                        $"EXEC sp_CalculateWeeklyPayroll @EmployeeID={paramId}"
+                        $"EXEC sp_CalculateWeeklyPayroll @StartDate={paramStartDate}, @EndDate={paramEndDate}, @EmployeeID={paramId}"
                     )
                     .ToListAsync();
 
@@ -208,8 +215,31 @@ namespace GestorEmpleados.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Ha ocurrido un error al procesar la nómina desde el procedimiento, {ex.ToString()}.");
+                _logger.LogError($"Ha ocurrido un error al procesar la nómina desde el procedimiento: {ex.ToString()}");
                 throw new EmployeeExceptions("Ha ocurrido un error en el motor de base de datos al procesar la nómina.");
+            }
+        }
+        public async Task<EmployeeModel> GetEmployeeBySSN(string SocialSecurityNumber)
+        {
+            try
+            {
+                var employee = await (from e in _dbContext.Employees
+                                      where e.Deleted == false && e.SocialSecurityNumber.Equals(SocialSecurityNumber)
+                                      select new EmployeeModel
+                                      {
+                                          FirstName = e.FirstName,
+                                          LastName = e.LastName,
+                                          SocialSecurityNumber = e.SocialSecurityNumber,
+                                          EmployeeId = e.EmployeeId,
+                                          
+                                      }).FirstOrDefaultAsync();
+
+                return employee;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error al obtener el empleado por su SSN, {ex.ToString()}.");
+                throw new EmployeeExceptions("Ha ocurrido un error al obtener el empleado por su SSN.");
             }
         }
     }

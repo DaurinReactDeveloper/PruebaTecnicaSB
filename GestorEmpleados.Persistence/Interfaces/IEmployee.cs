@@ -11,9 +11,10 @@ namespace GestorEmpleados.Persistence.Interfaces
 {
     public interface IEmployee : IBaseRepository<Employee>
     {
-        Task<List<EmployeeModel>> GetEmployees();
+        Task<List<Vw_EmployeModel>> GetEmployees();
         Task<EmployeeModel> GetEmployeeById(int id);
+        Task<EmployeeModel> GetEmployeeBySSN(string SocialSecurityNumber);
         Task<List<EmployeeModel>> GetEmployeeByFilter(string name, int? departmentId, int? employeeStatusId);
-        Task<List<PayrollEmployeeModel>> GetPayroll(int? id);
+        Task<List<PayrollEmployeeModel>> GetPayroll(int? employeeId, DateTime startDate, DateTime endDate);
     }
 }

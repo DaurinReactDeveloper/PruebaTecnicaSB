@@ -18,10 +18,10 @@ namespace GestorEmpleados.Persistence.Repositories
     {
 
         private readonly EmployeeManagementDBContext _dbContext;
-        private readonly ILogger<EmployeeRepository> _logger;
+        private readonly ILogger<UserRepository> _logger;
 
 
-        public UserRepository(EmployeeManagementDBContext dbContext, ILogger<EmployeeRepository> logger) : base(dbContext)
+        public UserRepository(EmployeeManagementDBContext dbContext, ILogger<UserRepository> logger) : base(dbContext)
         {
             this._dbContext = dbContext;
             this._logger = logger;
@@ -55,20 +55,22 @@ namespace GestorEmpleados.Persistence.Repositories
 
         }
 
-        public async Task<List<UserModel>> GetUsers()
+        public async Task<List<Vw_UserDetailModel>> GetUsers()
         {
             try
             {
-                var user = await (from u in _dbContext.Users
-                                  where u.Deleted == false
-                                  select new UserModel
+                var user = await (from u in _dbContext.VwUserDetails
+                                  select new Vw_UserDetailModel
                                   {
-                                      UserId = u.UserId,
-                                      EmployeeId = u.EmployeeId,
+                                      EmployeeFullName = u.EmployeeFullName,
                                       Email = u.Email,
-                                      Username = u.Username,
-                                      PasswordHash = u.PasswordHash,
-                                      RoleId = u.RoleId
+                                      EmployeeId =u.EmployeeId,
+                                      EmployeeStatusId = u.EmployeeStatusId,
+                                      RoleName = u.RoleName,
+                                      Username = u.Username,    
+                                      RoleId =u.RoleId,
+                                      UserId = u.UserId
+                                      
                                   }).ToListAsync();
 
                 return user;

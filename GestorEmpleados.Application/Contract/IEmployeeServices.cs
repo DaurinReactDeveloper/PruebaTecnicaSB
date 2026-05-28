@@ -14,6 +14,7 @@ namespace GestorEmpleados.Application.Contract
 
         Task<ServiceResult> GetEmployees();
         Task<ServiceResult> GetEmployeeById(int id);
+        Task<ServiceResult> GetEmployeeBySSN(string SocialSecurityNumber);
         Task<ServiceResult> GetEmployeeByFilter(string name, int? departmentId, int? employeeStatusId);
 
     }
