@@ -1,4 +1,5 @@
 
+using GestorEmpleados.Loc.Dependencies;
 using GestorEmpleados.Persistence.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,14 @@ namespace GestorEmpleados.Api
             builder.Services.AddDbContext<EmployeeManagementDBContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeManagementDBContext")));
 
+            // Dependency Injection
+            builder.Services.AddDepartmentDependencies();
+            builder.Services.AddEmployeeDependencies();
+            builder.Services.AddEmployeeStatusDependencies();
+            builder.Services.AddEmployeeTypeDependencies();
+            builder.Services.AddRolDependencies();
+            builder.Services.AddUserDependencies();
+            builder.Services.AddPasswordHashDependencies();
 
             //Integretion JWT
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -39,7 +48,6 @@ namespace GestorEmpleados.Api
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                     };
                 });
-
 
             var app = builder.Build();
 

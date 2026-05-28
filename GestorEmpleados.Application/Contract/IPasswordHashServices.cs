@@ -9,6 +9,6 @@ namespace GestorEmpleados.Application.Contract
     public interface IPasswordHashServices
     {
         string HashPassword(string password);
-
+        bool VerifyPassword(string plainPassword, string hashedPassword); 
     }
 }

@@ -19,12 +19,14 @@ namespace GestorEmpleados.Application.Services
     {
 
         private readonly IUser _userRepository;
+        private readonly IPasswordHashServices _passwordHashServices;
         private readonly ILogger<UserServices> _logger;
 
-        public UserServices(IUser userRepository, ILogger<UserServices> logger)
+        public UserServices(IUser userRepository, ILogger<UserServices> logger, IPasswordHashServices passwordHashServices)
         {
             this._userRepository = userRepository;
             this._logger = logger;
+            _passwordHashServices = passwordHashServices;
         }
 
         public async Task<ServiceResult> Add(UserAddDto modelDto)
@@ -53,7 +55,7 @@ namespace GestorEmpleados.Application.Services
                     return result;
                 }
 
-                string passwordHash = BCrypt.Net.BCrypt.HashPassword(modelDto.PasswordHash);
+                string passwordHash = this._passwordHashServices.HashPassword(modelDto.PasswordHash);
 
                 var userEntity = new User
                 {
@@ -176,7 +178,9 @@ namespace GestorEmpleados.Application.Services
                     return result;
                 }
 
-                if (!UserValidations.VerifyPassword(password, user.PasswordHash))
+                var verifiedPassword = this._passwordHashServices.VerifyPassword(password, user.PasswordHash);
+
+                if (!verifiedPassword)
                 {
                     result.Success = false;
                     result.Message = "Correo electrónico o contraseña incorrectos.";

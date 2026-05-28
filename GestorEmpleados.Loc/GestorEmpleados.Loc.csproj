@@ -7,11 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GestorEmpleados.Persistence\GestorEmpleados.Persistence.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Dependencies\" />
+    <ProjectReference Include="..\GestorEmpleados.Application\GestorEmpleados.Application.csproj" />
   </ItemGroup>
 
 </Project>

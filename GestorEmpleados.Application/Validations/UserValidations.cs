@@ -52,15 +52,6 @@ namespace GestorEmpleados.Application.Validations
             return user == null || user.EmployeeId == 0;
         }
 
-        public static bool VerifyPassword(string plainPassword, string hashedPassword)
-        {
-            if (string.IsNullOrEmpty(plainPassword) || string.IsNullOrEmpty(hashedPassword))
-            {
-                return false;
-            }
-            return BCrypt.Net.BCrypt.Verify(plainPassword, hashedPassword);
-        }
-
         #region Private Validation Methods
 
         private static void ValidateRequiredFields(UserDto user, List<string> errors)
