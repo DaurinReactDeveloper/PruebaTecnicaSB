@@ -38,6 +38,7 @@ namespace GestorEmpleados.Persistence.Repositories
                                                EmployeeTypeId = et.EmployeeTypeId,
                                                TypeName = et.TypeName,
                                                Description = et.Description
+
                                            }).AsNoTracking().ToListAsync();
 
                 return employeeTypes;

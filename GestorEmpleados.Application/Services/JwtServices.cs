@@ -21,14 +21,14 @@ namespace GestorEmpleados.Application.Services
             this._configuration = configuration;
         }
 
-        public string GenerateToken(string name, string role)
+        public string GenerateToken(string email, string role)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claim = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Sub, name),
+                new Claim(JwtRegisteredClaimNames.Sub, email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, role)
             };

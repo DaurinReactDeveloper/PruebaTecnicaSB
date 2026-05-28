@@ -32,6 +32,8 @@ namespace GestorEmpleados.Api
             builder.Services.AddRolDependencies();
             builder.Services.AddUserDependencies();
             builder.Services.AddPasswordHashDependencies();
+            builder.Services.AddReportDependencies();
+            builder.Services.AddJWTDependencies();
 
             //Integretion JWT
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -68,7 +70,7 @@ namespace GestorEmpleados.Api
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
 

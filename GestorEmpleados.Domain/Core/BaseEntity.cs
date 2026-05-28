@@ -13,13 +13,13 @@ namespace GestorEmpleados.Domain.Core
 
         public DateTime CreatedDate { get; set; }
 
-        public string ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
 
         public bool Deleted { get; set; }
 
-        public string DeletedBy { get; set; }
+        public string? DeletedBy { get; set; }
 
         public DateTime? DeletedDate { get; set; }
 

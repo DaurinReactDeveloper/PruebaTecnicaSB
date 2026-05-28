@@ -10,10 +10,10 @@ namespace GestorEmpleados.Application.Core
     {
         public ServiceResult()
         {
-            this.Success = true;
+            this.ResultType = MessageType.Success;
         }
 
-        public bool Success { get; set; }
+        public MessageType ResultType { get; set; }
         public dynamic Data { get; set; }
         public string Message { get; set; }
         public List<string> Errors { get; set; }

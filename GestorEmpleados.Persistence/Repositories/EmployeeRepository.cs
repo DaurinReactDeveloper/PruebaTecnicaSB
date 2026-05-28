@@ -192,5 +192,25 @@ namespace GestorEmpleados.Persistence.Repositories
             }
         }
 
+        public async Task<List<PayrollEmployeeModel>> GetPayroll(int? id)
+        {
+            try
+            {
+                var paramId = new SqlParameter("@EmployeeID", (object)id ?? DBNull.Value);
+
+                var payrollEmployees = await _dbContext.Database
+                    .SqlQuery<PayrollEmployeeModel>(
+                        $"EXEC sp_CalculateWeeklyPayroll @EmployeeID={paramId}"
+                    )
+                    .ToListAsync();
+
+                return payrollEmployees;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Ha ocurrido un error al procesar la nómina desde el procedimiento, {ex.ToString()}.");
+                throw new EmployeeExceptions("Ha ocurrido un error en el motor de base de datos al procesar la nómina.");
+            }
+        }
     }
 }

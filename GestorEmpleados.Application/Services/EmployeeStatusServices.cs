@@ -34,7 +34,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeStatusValidations.IsNullEmployeeStatus(employeeStatuses)) {
 
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontraron estados de empleados.";
                     return result;
   
@@ -45,7 +45,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo los estados de los empleados.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los estados de los empleados: {ex.Message}.");
             }

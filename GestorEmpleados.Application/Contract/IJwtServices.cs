@@ -9,6 +9,6 @@ namespace GestorEmpleados.Application.Contract
 {
     public interface IJwtServices
     {
-        public string GenerateToken(string name, string role);
+        public string GenerateToken(string email, string role);
     }
 }

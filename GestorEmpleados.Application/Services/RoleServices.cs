@@ -34,7 +34,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (RolValidations.IsNullRoles(role))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontraron roles.";
                     return result;
                 }
@@ -45,7 +45,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo los roles.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los roles: {ex.Message}.");
             }
@@ -62,9 +62,9 @@ namespace GestorEmpleados.Application.Services
             try
             {
 
-                if(RolValidations.IsValidRoleId(id))
+                if(!RolValidations.IsValidRoleId(id))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Debe proporcionar el ID del rol.";
                     return result;
                 }
@@ -73,7 +73,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (RolValidations.IsNullRole(role))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró el rol.";
                     return result;
                 }
@@ -84,7 +84,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo el rol.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo el rol: {ex.Message}.");
             }

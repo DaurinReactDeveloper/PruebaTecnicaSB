@@ -34,7 +34,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (!DeparmentValidations.GetDepartmentValidation(departments))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontraron departamentos";
                     return result;
                 }
@@ -45,7 +45,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo los departamentos.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los departamentos: {ex.Message}.");
             }

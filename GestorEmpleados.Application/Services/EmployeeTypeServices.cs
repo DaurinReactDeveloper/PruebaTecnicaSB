@@ -36,7 +36,7 @@ namespace GestorEmpleados.Application.Services
                 if (EmployeeTypeValidations.IsNullEmployeeType(employeeTypes))
                 {
 
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se han encontrado tipos de empleados.";
                     return result;
 
@@ -48,7 +48,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo los tipos de empleados.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los tipos de empleados: {ex.Message}.");
             }

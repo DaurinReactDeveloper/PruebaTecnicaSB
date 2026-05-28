@@ -14,6 +14,6 @@ namespace GestorEmpleados.Persistence.Interfaces
         Task<List<EmployeeModel>> GetEmployees();
         Task<EmployeeModel> GetEmployeeById(int id);
         Task<List<EmployeeModel>> GetEmployeeByFilter(string name, int? departmentId, int? employeeStatusId);
-
+        Task<List<PayrollEmployeeModel>> GetPayroll(int? id);
     }
 }

@@ -27,7 +27,7 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
-        public async Task<UserModel> GetUserByGmail(string email)
+        public async Task<UserModel> GetUserByEmail(string email)
         {
 
             try
@@ -122,14 +122,14 @@ namespace GestorEmpleados.Persistence.Repositories
         {
             try
             {
-                var userUpdate = await base.GetById(entity.EmployeeId);
+                var userUpdate = await base.GetById(entity.UserId);
 
                 if (userUpdate is null || userUpdate.Deleted)
                 {
                     throw new EmployeeExceptions("Ha ocurrido un error obteniendo el usuario.");
                 }
 
-                userUpdate.Role = entity.Role;
+                userUpdate.RoleId = entity.RoleId;
                 userUpdate.Email = entity.Email;
                 userUpdate.Username = entity.Username;
                 userUpdate.PasswordHash = entity.PasswordHash;
@@ -149,14 +149,16 @@ namespace GestorEmpleados.Persistence.Repositories
         {
             try
             {
-                var user = await base.GetById(entity.EmployeeId);
+                var user = await base.GetById(entity.UserId);
                 if (user is null || user.Deleted)
                 {
                     throw new UserExceptions("Ha ocurrido un error obteniendo el usuario.");
                 }
+
                 user.Deleted = true;
                 await base.Update(user);
                 await base.SaveChanges();
+
             }
             catch (Exception ex)
             {
@@ -165,6 +167,6 @@ namespace GestorEmpleados.Persistence.Repositories
             }
 
         }
-    
+
     }
 }

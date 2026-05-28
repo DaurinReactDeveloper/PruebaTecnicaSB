@@ -42,6 +42,7 @@ namespace GestorEmpleados.Infrastructure.Extensions
                 SocialSecurityNumber = employeeEntity.SocialSecurityNumber,
                 DepartmentId = employeeEntity.DepartmentId,
                 EmployeeStatusId = employeeEntity.EmployeeStatusId,
+                EmployeeTypeId = employeeEntity.EmployeeTypeId,
                 WeeklySalary = employeeEntity.WeeklySalary,
                 HourlyRate = employeeEntity.HourlyRate,
                 HoursWorked = employeeEntity.HoursWorked,

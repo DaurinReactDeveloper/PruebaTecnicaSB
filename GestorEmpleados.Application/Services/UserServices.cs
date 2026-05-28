@@ -29,61 +29,7 @@ namespace GestorEmpleados.Application.Services
             _passwordHashServices = passwordHashServices;
         }
 
-        public async Task<ServiceResult> Add(UserAddDto modelDto)
-        {
-            ServiceResult result = new ServiceResult();
-
-            try
-            {
-
-                List<string> validationErrors = UserValidations.ValidateUser(modelDto);
-
-                if (validationErrors.Any())
-                {
-                    result.Success = false;
-                    result.Message = "Error de validación en los datos del usuario.";
-                    result.Errors = validationErrors;
-                    return result;
-                }
-
-                var existingUser = await this._userRepository.GetUserByGmail(modelDto.Email);
-
-                if (UserValidations.UserExists(existingUser))
-                {
-                    result.Success = false;
-                    result.Message = "El correo electrónico ya se encuentra registrado en el sistema.";
-                    return result;
-                }
-
-                string passwordHash = this._passwordHashServices.HashPassword(modelDto.PasswordHash);
-
-                var userEntity = new User
-                {
-                    EmployeeId = modelDto.EmployeeId,
-                    Email = modelDto.Email,
-                    Username = modelDto.Username,
-                    PasswordHash = passwordHash,
-                    RoleId = modelDto.RoleId,
-                    CreatedBy = modelDto.ChangeUser,
-                    CreatedDate = DateTime.Now
-                };
-
-                await this._userRepository.Add(userEntity);
-
-                result.Success = true;
-                result.Message = "Usuario guardado correctamente.";
-            }
-            catch (Exception ex)
-            {
-                result.Success = false;
-                result.Message = "Error guardando el usuario.";
-                this._logger.LogError($"Ha ocurrido un error guardando el usuario: {ex.Message}.");
-            }
-
-            return result;
-        }
-
-        public async Task<ServiceResult> GetUserByGmail(string email)
+        public async Task<ServiceResult> GetUserByEmail(string email)
         {
 
             ServiceResult result = new ServiceResult();
@@ -94,17 +40,17 @@ namespace GestorEmpleados.Application.Services
                 if (UserValidations.IsInvalidEmail(email))
                 {
 
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "El correo electrónico no puede ser nulo.";
                     return result;
 
                 }
 
-                var user = await this._userRepository.GetUserByGmail(email);
+                var user = await this._userRepository.GetUserByEmail(email);
 
                 if (UserValidations.IsNullUser(user))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró un usuario con el correo electrónico proporcionado.";
                     return result;
                 }
@@ -115,7 +61,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo el usuario.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo el usuario: {ex.Message}."); ;
             }
@@ -136,7 +82,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (UserValidations.IsInvalidUserList(users))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontraron usuarios en el sistema.";
                     return result;
                 }
@@ -148,7 +94,7 @@ namespace GestorEmpleados.Application.Services
             catch (Exception ex)
             {
 
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo los usuarios.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los usuarios: {ex.Message}."); ;
             }
@@ -164,16 +110,16 @@ namespace GestorEmpleados.Application.Services
             {
                 if (UserValidations.IsInvalidEmail(email) || string.IsNullOrWhiteSpace(password))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "El correo electrónico y la contraseña son obligatorios.";
                     return result;
                 }
 
-                var user = await this._userRepository.GetUserByGmail(email);
+                var user = await this._userRepository.GetUserByEmail(email);
 
                 if (UserValidations.IsNullUser(user))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "Correo electrónico o contraseña incorrectos.";
                     return result;
                 }
@@ -182,7 +128,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (!verifiedPassword)
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Correo electrónico o contraseña incorrectos.";
                     return result;
                 }
@@ -192,9 +138,62 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Ocurrió un error al intentar iniciar sesión.";
                 this._logger.LogError($"Ha ocurrido un error en el proceso de Login: {ex.Message}.");
+            }
+
+            return result;
+        }
+
+        public async Task<ServiceResult> Add(UserAddDto modelDto)
+        {
+            ServiceResult result = new ServiceResult();
+
+            try
+            {
+
+                List<string> validationErrors = UserValidations.ValidateUser(modelDto);
+
+                if (validationErrors.Any())
+                {
+                    result.ResultType = MessageType.Warning;
+                    result.Message = "Error de validación en los datos del usuario.";
+                    result.Errors = validationErrors;
+                    return result;
+                }
+
+                var existingUser = await this._userRepository.GetUserByEmail(modelDto.Email);
+
+                if (UserValidations.UserExists(existingUser))
+                {
+                    result.ResultType = MessageType.Warning;
+                    result.Message = "El correo electrónico ya se encuentra registrado en el sistema.";
+                    return result;
+                }
+
+                string passwordHash = this._passwordHashServices.HashPassword(modelDto.PasswordHash);
+
+                var userEntity = new User
+                {
+                    EmployeeId = modelDto.EmployeeId,
+                    Email = modelDto.Email,
+                    Username = modelDto.Username,
+                    PasswordHash = passwordHash,
+                    RoleId = modelDto.RoleId,
+                    CreatedBy = modelDto.ChangeUser,
+                    CreatedDate = DateTime.Now
+                };
+
+                await this._userRepository.Add(userEntity);
+                result.Message = "Usuario guardado correctamente.";
+
+            }
+            catch (Exception ex)
+            {
+                result.ResultType = MessageType.Error;
+                result.Message = "Error guardando el usuario.";
+                this._logger.LogError($"Ha ocurrido un error guardando el usuario: {ex.Message}.");
             }
 
             return result;
@@ -208,16 +207,16 @@ namespace GestorEmpleados.Application.Services
             {
                 if (UserValidations.IsInvalidEmployeeId(modelDto))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Debe proporcionar el ID del usuario.";
                     return result;
                 }
 
-                var user = await this._userRepository.GetUserById(modelDto.EmployeeId);
+                var user = await this._userRepository.GetUserById(modelDto.UserId);
 
                 if (UserValidations.IsNullUser(user))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró un usuario con el ID proporcionado.";
                     return result;
                 }
@@ -231,7 +230,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error eliminando el usuario.";
                 this._logger.LogError($"Ha ocurrido un error eliminando el usuario: {ex.Message}.");
             }
@@ -250,16 +249,16 @@ namespace GestorEmpleados.Application.Services
 
                 if(UserValidations.IsInvalidEmployeeId(modelDto))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Debe proporcionar el ID del usuario.";
                     return result;
                 }
 
-                var user = await this._userRepository.GetUserById(modelDto.EmployeeId);
+                var user = await this._userRepository.GetUserById(modelDto.UserId);
 
                 if (UserValidations.IsNullUser(user))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró un usuario con el ID proporcionado.";
                     return result;
                 }
@@ -268,15 +267,21 @@ namespace GestorEmpleados.Application.Services
 
                 if (validationErrors.Any())
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Error de validación en los datos actualizados del usuario.";
                     result.Errors = validationErrors;
                     return result;
                 }
 
+                string passwordHash = this._passwordHashServices.HashPassword(modelDto.PasswordHash);
+
                 var userUpdate = UserExtensions.UserModelToEntity(user);
                 userUpdate.ModifiedBy = modelDto.ChangeUser;
                 userUpdate.ModifiedDate = DateTime.Now;
+                userUpdate.RoleId = modelDto.RoleId;
+                userUpdate.Email = modelDto.Email;
+                userUpdate.Username = modelDto.Username;
+                userUpdate.PasswordHash = passwordHash;
 
                 await this._userRepository.Update(userUpdate);
                 result.Message = "Usuario actualizado correctamente.";
@@ -284,7 +289,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error actualizando el usuario.";
                 this._logger.LogError($"Ha ocurrido un error actualizando el usuario: {ex.Message}.");
             }
@@ -292,5 +297,6 @@ namespace GestorEmpleados.Application.Services
             return result;
 
         }
+   
     }
 }

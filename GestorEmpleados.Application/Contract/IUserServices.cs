@@ -12,7 +12,7 @@ namespace GestorEmpleados.Application.Contract
     public interface IUserServices : IBaseServices<UserAddDto,UserUpdateDto,UserRemoveDto>
     {
         Task<ServiceResult> GetUsers();
-        Task<ServiceResult> GetUserByGmail(string email);
+        Task<ServiceResult> GetUserByEmail(string email);
         Task<ServiceResult> Login(string email, string password);
     }
 }

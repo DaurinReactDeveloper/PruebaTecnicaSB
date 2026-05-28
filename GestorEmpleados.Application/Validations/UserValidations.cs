@@ -49,7 +49,7 @@ namespace GestorEmpleados.Application.Validations
 
         public static bool IsInvalidEmployeeId(UserDto user)
         {
-            return user == null || user.EmployeeId == 0;
+            return user == null || user.UserId == 0;
         }
 
         #region Private Validation Methods

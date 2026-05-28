@@ -62,6 +62,12 @@ namespace GestorEmpleados.Application.Validations
             return employee == null || employee.EmployeeId == 0;
         }
 
+        public static bool IsParameterNull(string name, int? departmentId, int? employeeStatusId)
+        {
+            return string.IsNullOrWhiteSpace(name) && !departmentId.HasValue && !employeeStatusId.HasValue;
+        }
+
+
         #region Private Validation Methods
 
         private static void ValidateCommonFields(EmployeeDto employee, List<string> errors)

@@ -36,7 +36,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (validationErrors.Any())
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning; 
                     result.Message = "Error de validación en los datos del empleado.";
                     result.Errors = validationErrors;
                     return result;
@@ -62,13 +62,14 @@ namespace GestorEmpleados.Application.Services
                 };
 
                 await this._employeeRepository.Add(employeeEntity);
+                await this._employeeRepository.SaveChanges();
 
-                result.Success = true;
                 result.Message = "Empleado agregado correctamente.";
+
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error guardando el empleado.";
                 this._logger.LogError($"Ha ocurrido un error guardando el empleado: {ex.Message}.");
             }
@@ -84,12 +85,19 @@ namespace GestorEmpleados.Application.Services
             try
             {
 
+                if (EmployeeValidations.IsParameterNull(name, departmentId, employeeStatusId))
+                {
+                    result.ResultType = MessageType.Warning; 
+                    result.Message = "Debe proporcionar al menos un filtro para buscar empleados.";
+                    return result;
+                }
+
                 var employees = await this._employeeRepository.GetEmployeeByFilter(name, departmentId, employeeStatusId);
 
                 if (EmployeeValidations.IsInvalidEmployeeList(employees))
                 {
 
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound; 
                     result.Message = "No se encontraron empleados con los filtros proporcionados.";
                     return result;
 
@@ -101,7 +109,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obteniendo los empleados.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los empleados: {ex.Message}.");
             }
@@ -120,7 +128,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsNullEmployee(employee))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;                                     
                     result.Message = "No se encontró el empleado con el ID proporcionado.";
                     return result;
                 }
@@ -131,7 +139,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obtiendo el empleado.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo el empleado: {ex.Message}.");
             }
@@ -152,11 +160,10 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsInvalidEmployeeList(employees))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontraron empleados.";
                     return result;
                 }
-
 
                 result.Data = employees;
                 result.Message = "Empleados obtenidos correctamente.";
@@ -164,7 +171,7 @@ namespace GestorEmpleados.Application.Services
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error obtiendo los empleados.";
                 this._logger.LogError($"Ha ocurrido un error obteniendo los empleados: {ex.Message}.");
             }
@@ -182,7 +189,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsInvalidEmployeeId(modelDto))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning; 
                     result.Message = "Debe proporcionar el ID del empleado.";
                     return result;
                 }
@@ -191,23 +198,24 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsNullEmployee(employee))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró el empleado con el ID proporcionado.";
                     return result;
                 }
 
-                var employeDelete = EmployeeExtensions.EmployeeModelToEntity(employee);
+                var EmployeDelete = EmployeeExtensions.EmployeeModelToEntity(employee);
 
-                employeDelete.DeletedBy = modelDto.ChangeUser;
+                EmployeDelete.DeletedBy = modelDto.ChangeUser;
 
-                await this._employeeRepository.Remove(employeDelete);
+                await this._employeeRepository.Remove(EmployeDelete);
+                await _employeeRepository.SaveChanges();
 
                 result.Message = "Empleado eliminado correctamente.";
 
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error eliminando el empleado.";
                 this._logger.LogError($"Ha ocurrido un error eliminando el empleado: {ex.Message}.");
             }
@@ -225,7 +233,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsInvalidEmployeeId(modelDto))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Error;
                     result.Message = "Debe proporcionar el ID del empleado.";
                     return result;
                 }
@@ -234,7 +242,7 @@ namespace GestorEmpleados.Application.Services
 
                 if (EmployeeValidations.IsNullEmployee(employee))
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró el empleado con el ID proporcionado.";
                     return result;
                 }
@@ -243,23 +251,34 @@ namespace GestorEmpleados.Application.Services
 
                 if (validationErrors.Any())
                 {
-                    result.Success = false;
+                    result.ResultType = MessageType.Warning;
                     result.Message = "Error de validación en los datos actualizados del empleado.";
                     result.Errors = validationErrors;
                     return result;
                 }
 
                 var employeeUpdate = EmployeeExtensions.EmployeeModelToEntity(employee);
+
                 employeeUpdate.ModifiedBy = modelDto.ChangeUser;
                 employeeUpdate.ModifiedDate = DateTime.Now;
+                employeeUpdate.FirstName = modelDto.FirstName;
+                employeeUpdate.LastName = modelDto.LastName;
+                employeeUpdate.SocialSecurityNumber = modelDto.SocialSecurityNumber;
+                employeeUpdate.EmployeeStatusId = modelDto.EmployeeStatusId;
+                employeeUpdate.GrossSales = modelDto.GrossSales;
+                employeeUpdate.HourlyRate = modelDto.HourlyRate;
+                employeeUpdate.HoursWorked = modelDto.HoursWorked;
+                employeeUpdate.WeeklySalary = modelDto.WeeklySalary;
+                employeeUpdate.CommissionRate = modelDto.CommissionRate;
 
                 await this._employeeRepository.Update(employeeUpdate);
+                await _employeeRepository.SaveChanges();
 
                 result.Message = "Empleado actualizado correctamente.";
             }
             catch (Exception ex)
             {
-                result.Success = false;
+                result.ResultType = MessageType.Error;
                 result.Message = "Error actualizando el empleado.";
                 this._logger.LogError($"Ha ocurrido un error actualizando el empleado: {ex.Message}.");
             }
