@@ -135,6 +135,7 @@ Características:
 | Entity Framework Core     | ORM                       |
 | SQL Server                | Base de datos             |
 | JWT Bearer Authentication | Seguridad                 |
+| BCrypt.Net                | Hash seguro de contraseñas|
 | Dependency Injection      | Inyección de dependencias |
 | Swagger/OpenAPI           | Documentación API         |
 | Logging                   | Registro de eventos       |
