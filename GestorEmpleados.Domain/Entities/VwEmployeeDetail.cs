@@ -43,5 +43,8 @@ namespace GestorEmpleados.Domain.Entities
 
         public bool Deleted { get; set; }
 
+        public string? ModifiedBy { get; set; }
+
+
     }
 }

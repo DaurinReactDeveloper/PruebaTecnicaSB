@@ -11,7 +11,7 @@ namespace GestorEmpleados.Persistence.Interfaces
 {
     public interface IUser : IBaseRepository<User>
     {
-        Task<UserModel> GetUserByEmail(string email);
+        Task<Vw_UserDetailModel> GetUserByEmail(string email);
         Task<List<Vw_UserDetailModel>> GetUsers();
         Task<UserModel> GetUserById(int Id);
 

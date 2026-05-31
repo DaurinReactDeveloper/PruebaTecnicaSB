@@ -45,17 +45,17 @@ namespace GestorEmpleados.Api.Controllers
             return this.ToActionResult(result);
         }
 
-        [HttpPost("Login")] 
+        [HttpPost("login")] 
         public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto)
         {
             var result = await _userServices.Login(loginDto.Email, loginDto.Password);
-            var rolId = await _roleServices.GetRoleById(result.Data.RoleId);
 
             if (result.ResultType == MessageType.Success && result.Data != null)
             {
+                var rolId = await _roleServices.GetRoleById(result.Data.RoleId);
                 var user = result.Data;
                 var role = rolId.Data;
-                var token = _jwtServices.GenerateToken(user.Email, role.RoleName);
+                var token = _jwtServices.GenerateToken(user.Username, role.RoleName, user.Email);
                 result.Data = new
                 {
                     Usuario = user,

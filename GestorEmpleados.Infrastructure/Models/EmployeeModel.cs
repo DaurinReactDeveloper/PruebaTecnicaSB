@@ -14,6 +14,8 @@ namespace GestorEmpleados.Infrastructure.Models
 
         public string LastName { get; set; }
 
+        public string? FullName { get; set; }
+
         public string SocialSecurityNumber { get; set; }
 
         public int EmployeeTypeId { get; set; }
@@ -41,6 +43,8 @@ namespace GestorEmpleados.Infrastructure.Models
         public decimal? CommissionRate { get; set; }
 
         public decimal? BaseSalary { get; set; }
+
+        public string? ModifiedBy { get; set; }
 
     }
 }

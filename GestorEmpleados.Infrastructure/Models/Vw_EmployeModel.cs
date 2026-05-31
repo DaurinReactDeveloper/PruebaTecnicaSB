@@ -43,5 +43,8 @@ namespace GestorEmpleados.Infrastructure.Models
         public decimal? BaseSalary { get; set; }
 
         public bool Deleted { get; set; }
+
+        public string? ModifiedBy { get; set; }
+
     }
 }

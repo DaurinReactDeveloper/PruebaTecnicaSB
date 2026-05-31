@@ -48,13 +48,14 @@ namespace GestorEmpleados.Application.Services
 
                 var user = await this._userRepository.GetUserByEmail(email);
 
-                if (UserValidations.IsNullUser(user))
+                if (UserValidations.IsInvalidVmUser(user))
                 {
                     result.ResultType = MessageType.NotFound;
                     result.Message = "No se encontró un usuario con el correo electrónico proporcionado.";
                     return result;
                 }
 
+                user.PasswordHash = "";
                 result.Data = user;
                 result.Message = "Usuario obtenido correctamente.";
 
@@ -117,7 +118,7 @@ namespace GestorEmpleados.Application.Services
 
                 var user = await this._userRepository.GetUserByEmail(email);
 
-                if (UserValidations.IsNullUser(user))
+                if (UserValidations.IsInvalidVmUser(user))
                 {
                     result.ResultType = MessageType.NotFound;
                     result.Message = "Correo electrónico o contraseña incorrectos.";
@@ -133,6 +134,7 @@ namespace GestorEmpleados.Application.Services
                     return result;
                 }
 
+                user.PasswordHash = "";
                 result.Data = user;
                 result.Message = "Autenticación exitosa.";
             }
@@ -205,7 +207,7 @@ namespace GestorEmpleados.Application.Services
 
             try
             {
-                if (UserValidations.IsInvalidEmployeeId(modelDto))
+                if (UserValidations.IsInvalidUserId(modelDto))
                 {
                     result.ResultType = MessageType.Warning;
                     result.Message = "Debe proporcionar el ID del usuario.";
@@ -247,7 +249,7 @@ namespace GestorEmpleados.Application.Services
             try
             {
 
-                if(UserValidations.IsInvalidEmployeeId(modelDto))
+                if(UserValidations.IsInvalidUserId(modelDto))
                 {
                     result.ResultType = MessageType.Warning;
                     result.Message = "Debe proporcionar el ID del usuario.";

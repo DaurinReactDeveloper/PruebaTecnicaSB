@@ -27,21 +27,26 @@ namespace GestorEmpleados.Persistence.Repositories
             this._logger = logger;
         }
 
-        public async Task<UserModel> GetUserByEmail(string email)
+        public async Task<Vw_UserDetailModel> GetUserByEmail(string email)
         {
 
             try
             {
-                var user = await (from u in _dbContext.Users
-                                  where u.Email == email && u.Deleted == false
-                                  select new UserModel
+               var user = await (from u in _dbContext.VwUserDetails
+                                 where u.Email.Equals(email)
+                                  select new Vw_UserDetailModel
                                   {
-                                      UserId = u.UserId,
-                                      EmployeeId = u.EmployeeId,
+                                      EmployeeFullName = u.EmployeeFullName,
                                       Email = u.Email,
-                                      Username = u.Username,
+                                      EmployeeId =u.EmployeeId,
+                                      EmployeeStatusId = u.EmployeeStatusId,
+                                      RoleName = u.RoleName,
+                                      Username = u.Username,    
+                                      RoleId =u.RoleId,
+                                      UserId = u.UserId,
                                       PasswordHash = u.PasswordHash,
-                                      RoleId = u.RoleId
+                                      SocialSecurityNumber = u.SocialSecurityNumber
+
                                   }).FirstOrDefaultAsync();
 
                 return user;
@@ -69,7 +74,9 @@ namespace GestorEmpleados.Persistence.Repositories
                                       RoleName = u.RoleName,
                                       Username = u.Username,    
                                       RoleId =u.RoleId,
-                                      UserId = u.UserId
+                                      UserId = u.UserId,
+                                      PasswordHash = "",
+                                      SocialSecurityNumber = u.SocialSecurityNumber
                                       
                                   }).ToListAsync();
 

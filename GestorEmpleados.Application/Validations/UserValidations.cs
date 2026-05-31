@@ -27,7 +27,7 @@ namespace GestorEmpleados.Application.Validations
             return errors;
         }
 
-        public static bool UserExists(UserModel user)
+        public static bool UserExists(Vw_UserDetailModel user)
         {
             return user != null;
         }
@@ -47,7 +47,13 @@ namespace GestorEmpleados.Application.Validations
             return user == null;
         }
 
-        public static bool IsInvalidEmployeeId(UserDto user)
+        public static bool IsInvalidVmUser(Vw_UserDetailModel user)
+        {
+            return user == null;
+        }
+
+
+        public static bool IsInvalidUserId(UserDto user)
         {
             return user == null || user.UserId == 0;
         }
@@ -64,9 +70,6 @@ namespace GestorEmpleados.Application.Validations
 
             if (string.IsNullOrWhiteSpace(user.Email))
                 errors.Add("El correo electrónico es obligatorio.");
-
-            if (string.IsNullOrWhiteSpace(user.PasswordHash))
-                errors.Add("La contraseña es obligatoria.");
 
             if (user.RoleId <= 0)
                 errors.Add("Debe asignar un rol válido al usuario.");

@@ -52,7 +52,9 @@ namespace GestorEmpleados.Persistence.Repositories
                    HoursWorked = e.HoursWorked,
                    GrossSales = e.GrossSales,
                    CommissionRate = e.CommissionRate,
-                   BaseSalary = e.BaseSalary
+                   BaseSalary = e.BaseSalary,
+                   ModifiedBy = e.ModifiedBy,
+                  
                })
                .ToListAsync();
 
@@ -183,6 +185,8 @@ namespace GestorEmpleados.Persistence.Repositories
                 empleadoUpdate.HoursWorked = entity.HoursWorked;
                 empleadoUpdate.WeeklySalary = entity.WeeklySalary;
                 empleadoUpdate.CommissionRate = entity.CommissionRate;
+                empleadoUpdate.ModifiedBy = entity.ModifiedBy;
+                empleadoUpdate.ModifiedDate = entity.ModifiedDate;
 
 
                 await base.Update(empleadoUpdate);

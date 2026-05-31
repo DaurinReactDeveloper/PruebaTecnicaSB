@@ -24,5 +24,9 @@ namespace GestorEmpleados.Infrastructure.Models
 
         public int EmployeeStatusId { get; set; }
 
+        public string PasswordHash { get; set; }
+
+        public string SocialSecurityNumber { get; set; }
+
     }
 }
