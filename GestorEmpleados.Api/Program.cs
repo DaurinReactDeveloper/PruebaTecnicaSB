@@ -1,4 +1,11 @@
 
+using GestorEmpleados.Loc.Dependencies;
+using GestorEmpleados.Persistence.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace GestorEmpleados.Api
 {
     public class Program
@@ -14,6 +21,57 @@ namespace GestorEmpleados.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDbContext<EmployeeManagementDBContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeManagementDBContext")));
+
+            // Dependency Injection
+            builder.Services.AddDepartmentDependencies();
+            builder.Services.AddEmployeeDependencies();
+            builder.Services.AddEmployeeStatusDependencies();
+            builder.Services.AddEmployeeTypeDependencies();
+            builder.Services.AddRolDependencies();
+            builder.Services.AddUserDependencies();
+            builder.Services.AddPasswordHashDependencies();
+            builder.Services.AddReportDependencies();
+            builder.Services.AddJWTDependencies();
+
+            //Configurar CORS
+            var frontendUrl = builder.Configuration.GetValue<string>("FrontendUrl");
+
+            if (string.IsNullOrEmpty(frontendUrl))
+            {
+
+                throw new ArgumentException("FrontendUrl" + "El valor de FrontendUrl no puede ser nulo o vacío.");
+
+            }
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins(frontendUrl)
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                });
+            });
+
+            //Integretion JWT
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -22,9 +80,19 @@ namespace GestorEmpleados.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            else
+            {
+
+                app.UseSwagger();
+                app.UseSwaggerUI(c => {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                    c.RoutePrefix = string.Empty;
+                });
+            }
 
             app.UseHttpsRedirection();
-
+            app.UseCors();
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
 
