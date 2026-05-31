@@ -7,14 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GestorEmpleados.Loc\GestorEmpleados.Loc.csproj" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.27" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="Core\" />
-    <Folder Include="Validations\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\GestorEmpleados.Persistence\GestorEmpleados.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
