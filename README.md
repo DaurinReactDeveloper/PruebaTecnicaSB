@@ -192,6 +192,10 @@ dotnet --version
 
 ---
 
+# ℹ️ Nota
+
+Por fines de evaluación, se incluyen los archivos de configuración (`appsettings.json` y `.env`) necesarios para ejecutar la solución de forma inmediata. En un entorno productivo, estas configuraciones normalmente se gestionarían mediante variables de entorno y no se almacenarían en el repositorio.
+
 # 🗄️ Configuración de Base de Datos
 
 La solución incluye un script SQL para la creación completa de la base de datos.
@@ -229,7 +233,7 @@ El script crea automáticamente:
 ## Paso 1 - Clonar repositorio
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/DaurinReactDeveloper/PruebaTecnicaSB.git>
 ```
 
 ---
